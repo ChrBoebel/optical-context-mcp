@@ -1,4 +1,4 @@
-<!-- mcp-name: io.github.chrboebel/optical-context-mcp -->
+<!-- mcp-name: io.github.ChrBoebel/optical-context-mcp -->
 
 <p align="center">
   <img src="./assets/optical-context-logo.png" alt="Optical Context MCP logo" width="680">
