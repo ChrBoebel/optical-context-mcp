@@ -63,21 +63,26 @@ Example local run facts from the generated manifest:
 
 This example shows the intended workflow: take a long, visually structured PDF and compress it into a smaller set of retrievable packed images that still preserve the visual structure of the source.
 
-## Quickstart
+## Install
 
 ```bash
-uv venv --python /opt/homebrew/bin/python3.11 .venv
-uv pip install --python .venv/bin/python -e .
+python -m pip install "git+https://github.com/ChrBoebel/optical-context-mcp.git@v0.1.0"
 ```
 
-- `MISTRAL_API_KEY` is required
+Run directly from GitHub with `uvx`:
+
+```bash
+uvx --from git+https://github.com/ChrBoebel/optical-context-mcp@v0.1.0 optical-context-mcp
+```
+
+- `MISTRAL_API_KEY` is required for `compress_pdf`
 
 ## Run
 
 Default transport is `stdio`:
 
 ```bash
-.venv/bin/python server.py
+optical-context-mcp
 ```
 
 ## Claude Code
@@ -85,7 +90,7 @@ Default transport is `stdio`:
 Register the server in a project:
 
 ```bash
-claude mcp add -s project optical-context -- /absolute/path/to/.venv/bin/python /absolute/path/to/server.py
+claude mcp add -s project optical-context -- uvx --from git+https://github.com/ChrBoebel/optical-context-mcp@v0.1.0 optical-context-mcp
 ```
 
 Typical use:
@@ -135,5 +140,7 @@ For many vision-capable agents, that is a better intermediate format than a plai
 ## Development
 
 ```bash
+uv venv --python /opt/homebrew/bin/python3.11 .venv
+uv pip install --python .venv/bin/python -e ".[dev]"
 .venv/bin/python -m pytest
 ```
