@@ -128,6 +128,10 @@ For many vision-capable agents, that is a better intermediate format than a plai
 - optimized for compression and retrieval, not final polished markdown generation
 - quality depends on OCR quality and the visual density of the source document
 
+## Roadmap
+
+- make the OCR layer provider-agnostic so different OCR backends can be swapped behind the same MCP workflow
+
 ## Development
 
 ```bash
