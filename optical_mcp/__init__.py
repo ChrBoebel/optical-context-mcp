@@ -1,0 +1,1 @@
+"""Optical Context MCP package."""

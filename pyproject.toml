@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "optical-context-mcp"
+version = "0.1.0"
+description = "FastMCP wrapper for optical PDF compression into dense packed images."
+readme = "README.md"
+requires-python = ">=3.14"
+license = { file = "LICENSE" }
+dependencies = [
+  "fastmcp>=3.1.0",
+  "mistralai>=1.12.0",
+  "Pillow>=12.0.0",
+  "python-dotenv>=1.2.0",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.0.0",
+]
+
+[tool.setuptools.packages.find]
+include = ["optical_mcp*"]
+
+[tool.pytest.ini_options]
+addopts = "-ra"
+testpaths = ["tests"]
