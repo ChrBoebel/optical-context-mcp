@@ -49,7 +49,7 @@ Skip it for:
 The image below shows a real local validation run on a public research paper with dense text, figures, charts, and page-level visual structure. The packed image on the right consolidates the seven source pages shown on the left.
 
 <p align="center">
-  <img src="./assets/original-vs-packed-comparison.png" alt="Side-by-side comparison of original pages and the generated packed output" width="980">
+  <img src="./assets/original-vs-packed-comparison-straight-arrow.png" alt="Side-by-side comparison of original pages and the generated packed output" width="980">
 </p>
 
 Example local run facts from the generated manifest:
