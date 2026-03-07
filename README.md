@@ -1,8 +1,18 @@
-# Optical Context MCP
+<p align="center">
+  <img src="./assets/optical-context-logo.png" alt="Optical Context MCP logo" width="680">
+</p>
 
-[![Python](https://img.shields.io/badge/python-3.14-blue.svg)](https://www.python.org/)
-[![MCP](https://img.shields.io/badge/MCP-FastMCP-111111.svg)](https://gofastmcp.com/)
-[![License](https://img.shields.io/badge/license-MIT-green.svg)](./LICENSE)
+<h1 align="center">Optical Context MCP</h1>
+
+<p align="center">
+  FastMCP server for compressing large, OCR-heavy PDFs into dense packed images for agent workflows.
+</p>
+
+<p align="center">
+  <a href="https://www.python.org/"><img src="https://img.shields.io/badge/python-3.14-blue.svg" alt="Python 3.14"></a>
+  <a href="https://gofastmcp.com/"><img src="https://img.shields.io/badge/MCP-FastMCP-111111.svg" alt="FastMCP"></a>
+  <a href="./LICENSE"><img src="https://img.shields.io/badge/license-MIT-green.svg" alt="MIT License"></a>
+</p>
 
 FastMCP server for **large, OCR-heavy PDF workflows**. It reads a local PDF, runs OCR with Mistral, recomposes the content into a much smaller set of dense packed images, and returns those images to an MCP client in a form that agents can actually work with.
 
@@ -124,6 +134,8 @@ This keeps the expensive document preprocessing outside the conversational conte
 
 ```text
 .
+├── assets/
+│   └── optical-context-logo.png
 ├── server.py
 ├── pyproject.toml
 ├── README.md
