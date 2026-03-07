@@ -7,19 +7,20 @@
 <h1 align="center">Optical Context MCP</h1>
 
 <p align="center">
-  FastMCP server for compressing large, OCR-heavy PDFs into dense packed images for agent workflows.
+  Compress OCR-heavy PDFs into dense packed images so agents can work with long visual documents.
 </p>
 
 <p align="center">
+  <a href="https://pypi.org/project/optical-context-mcp/"><img src="https://img.shields.io/pypi/v/optical-context-mcp.svg" alt="PyPI version"></a>
   <a href="https://www.python.org/"><img src="https://img.shields.io/badge/python-3.11%2B-blue.svg" alt="Python 3.11+"></a>
   <a href="https://gofastmcp.com/"><img src="https://img.shields.io/badge/MCP-FastMCP-111111.svg" alt="FastMCP"></a>
   <a href="https://github.com/ChrBoebel/optical-context-mcp/actions/workflows/ci.yml"><img src="https://github.com/ChrBoebel/optical-context-mcp/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
   <a href="./LICENSE"><img src="https://img.shields.io/badge/license-MIT-green.svg" alt="MIT License"></a>
 </p>
 
-Optical Context MCP is built for one specific problem: giving agents a practical way to work with **large, visually structured PDFs** without sending every page individually to a vision model.
+Optical Context MCP is built for one specific job: turning **large, visually structured PDFs** into a smaller set of retrievable packed images for agent workflows.
 
-It reads a local PDF, runs OCR with Mistral, recomposes the extracted text and figures into a much smaller set of packed images, and exposes those artifacts over MCP for batch retrieval.
+It reads a local PDF, runs OCR with Mistral, recomposes the extracted text and figures into dense PNGs, and exposes those artifacts over MCP for batch retrieval.
 
 ## What It Does
 
@@ -68,16 +69,22 @@ This example shows the intended workflow: take a long, visually structured PDF a
 ## Install
 
 ```bash
-python -m pip install "git+https://github.com/ChrBoebel/optical-context-mcp.git@v0.1.2"
+python -m pip install optical-context-mcp
 ```
 
-Run directly from GitHub with `uvx`:
+Run without installing:
 
 ```bash
-uvx --from git+https://github.com/ChrBoebel/optical-context-mcp@v0.1.2 optical-context-mcp
+uvx optical-context-mcp
 ```
 
 - `MISTRAL_API_KEY` is required for `compress_pdf`
+
+For pinned shared setups:
+
+```bash
+uvx --from optical-context-mcp==0.1.3 optical-context-mcp
+```
 
 ## Run
 
@@ -92,7 +99,7 @@ optical-context-mcp
 Register the server in a project:
 
 ```bash
-claude mcp add -s project optical-context -- uvx --from git+https://github.com/ChrBoebel/optical-context-mcp@v0.1.2 optical-context-mcp
+claude mcp add -s project optical-context -- uvx optical-context-mcp
 ```
 
 Typical use:

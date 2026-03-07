@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "optical-context-mcp"
-version = "0.1.2"
-description = "FastMCP server for compressing large OCR-heavy PDFs into dense packed images for agent workflows."
+version = "0.1.3"
+description = "MCP server that compresses OCR-heavy PDFs into dense packed images for AI agent workflows."
 readme = "README.md"
 requires-python = ">=3.11"
 license = "MIT"
@@ -40,6 +40,8 @@ optical-context-mcp = "optical_mcp.server:main"
 include = ["optical_mcp*"]
 
 [project.urls]
+Homepage = "https://pypi.org/project/optical-context-mcp/"
+PyPI = "https://pypi.org/project/optical-context-mcp/"
 Repository = "https://github.com/ChrBoebel/optical-context-mcp"
 Issues = "https://github.com/ChrBoebel/optical-context-mcp/issues"
 
