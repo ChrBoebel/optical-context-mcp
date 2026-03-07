@@ -31,7 +31,7 @@ It reads a local PDF, runs OCR with Mistral, recomposes the extracted text and f
 
 Use it for:
 
-- design manuals
+- operating manuals
 - scanned handbooks
 - product catalogs
 - PDF slide decks
@@ -48,8 +48,8 @@ Skip it for:
 
 The image below is based on a real local run of this repository:
 
-- left: the two rendered source pages from `Corporate Design_KLICKin.pdf`
-- right: the generated packed output returned by the recomposition step
+- left: two rendered illustration pages from `D_SielCUP_Betriebsanleitung_4136701000.pdf`
+- right: one generated packed image from the same OCR + recomposition run
 
 <p align="center">
   <img src="./assets/original-vs-packed-comparison.png" alt="Side-by-side comparison of the original PDF and the generated packed output" width="980">
@@ -57,13 +57,13 @@ The image below is based on a real local run of this repository:
 
 Example local run facts from `manifest.json`:
 
-- source document: 2-page corporate design PDF
-- extracted images: 14
-- packed output images: 1
-- packed image size: `1012x480`
-- packed image file size: `151,905 bytes`
+- source document: 74-page operating manual
+- extracted images: 119
+- packed output images: 12
+- example packed image size: `982x1512`
+- example packed image file size: `374,741 bytes`
 
-That means the agent can inspect one packed image instead of two original pages, while still preserving the text-figure grouping produced by the recomposition step.
+This example shows the intended workflow: take a large equipment manual with technical illustrations and compress it into a smaller set of retrievable packed images that still preserve the visual structure of the source.
 
 ## Quickstart
 
