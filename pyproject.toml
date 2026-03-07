@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "optical-context-mcp"
-version = "0.1.0"
+version = "0.1.1"
 description = "FastMCP server for compressing large OCR-heavy PDFs into dense packed images for agent workflows."
 readme = "README.md"
 requires-python = ">=3.11"

@@ -1,0 +1,22 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-10-17/server.schema.json",
+  "name": "io.github.chrboebel/optical-context-mcp",
+  "title": "Optical Context MCP",
+  "description": "Compress large OCR-heavy PDFs into dense packed images for agent workflows.",
+  "version": "0.1.1",
+  "websiteUrl": "https://github.com/ChrBoebel/optical-context-mcp",
+  "repository": {
+    "url": "https://github.com/ChrBoebel/optical-context-mcp",
+    "source": "github"
+  },
+  "packages": [
+    {
+      "registryType": "pypi",
+      "identifier": "optical-context-mcp",
+      "version": "0.1.1",
+      "transport": {
+        "type": "stdio"
+      }
+    }
+  ]
+}
