@@ -46,18 +46,15 @@ Skip it for:
 
 ## Example Result
 
-The image below is based on a real local run of this repository:
-
-- left: two rendered illustration pages from `D_SielCUP_Betriebsanleitung_4136701000.pdf`
-- right: one generated packed image from the same OCR + recomposition run
+The image below shows a real local validation run on a large operating manual with technical diagrams, warning icons, and dense OCR text.
 
 <p align="center">
-  <img src="./assets/original-vs-packed-comparison.png" alt="Side-by-side comparison of the original PDF and the generated packed output" width="980">
+  <img src="./assets/original-vs-packed-comparison.png" alt="Side-by-side comparison of original pages and the generated packed output" width="980">
 </p>
 
-Example local run facts from `manifest.json`:
+Example local run facts from the generated manifest:
 
-- source document: 74-page operating manual
+- source manual pages: 74
 - extracted images: 119
 - packed output images: 12
 - example packed image size: `982x1512`
