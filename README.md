@@ -46,7 +46,7 @@ Skip it for:
 
 ## Example Result
 
-The image below shows a real local validation run on a large operating manual with technical diagrams, warning icons, and dense OCR text. The packed image on the right consolidates the six source pages shown on the left.
+The image below shows a real local validation run on a public research paper with dense text, figures, charts, and page-level visual structure. The packed image on the right consolidates the seven source pages shown on the left.
 
 <p align="center">
   <img src="./assets/original-vs-packed-comparison.png" alt="Side-by-side comparison of original pages and the generated packed output" width="980">
@@ -54,14 +54,14 @@ The image below shows a real local validation run on a large operating manual wi
 
 Example local run facts from the generated manifest:
 
-- source manual pages: 74
-- previewed source page range: 9 to 14
-- extracted images: 119
-- packed output images: 12
-- example packed image size: `982x1512`
-- example packed image file size: `374,741 bytes`
+- source paper pages: 22
+- previewed source page range: 15 to 21
+- extracted images: 30
+- packed output images: 6
+- example packed image size: `986x1084`
+- example packed image file size: `536,697 bytes`
 
-This example shows the intended workflow: take a large equipment manual with technical illustrations and compress it into a smaller set of retrievable packed images that still preserve the visual structure of the source.
+This example shows the intended workflow: take a long, visually structured PDF and compress it into a smaller set of retrievable packed images that still preserve the visual structure of the source.
 
 ## Quickstart
 
