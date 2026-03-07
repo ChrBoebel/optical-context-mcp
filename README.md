@@ -68,13 +68,13 @@ This example shows the intended workflow: take a long, visually structured PDF a
 ## Install
 
 ```bash
-python -m pip install "git+https://github.com/ChrBoebel/optical-context-mcp.git@v0.1.1"
+python -m pip install "git+https://github.com/ChrBoebel/optical-context-mcp.git@v0.1.2"
 ```
 
 Run directly from GitHub with `uvx`:
 
 ```bash
-uvx --from git+https://github.com/ChrBoebel/optical-context-mcp@v0.1.1 optical-context-mcp
+uvx --from git+https://github.com/ChrBoebel/optical-context-mcp@v0.1.2 optical-context-mcp
 ```
 
 - `MISTRAL_API_KEY` is required for `compress_pdf`
@@ -92,7 +92,7 @@ optical-context-mcp
 Register the server in a project:
 
 ```bash
-claude mcp add -s project optical-context -- uvx --from git+https://github.com/ChrBoebel/optical-context-mcp@v0.1.1 optical-context-mcp
+claude mcp add -s project optical-context -- uvx --from git+https://github.com/ChrBoebel/optical-context-mcp@v0.1.2 optical-context-mcp
 ```
 
 Typical use:
