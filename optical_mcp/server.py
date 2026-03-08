@@ -3,8 +3,10 @@ from __future__ import annotations
 import argparse
 import base64
 import json
+import os
 from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
+import tempfile
 from typing import Sequence
 
 from fastmcp import FastMCP
@@ -15,7 +17,17 @@ from .service import PROJECT_ROOT, OpticalCompressionService
 from .storage import JobStore
 
 SERVER_ROOT = Path(__file__).resolve().parents[1]
-JOB_STORE = JobStore(SERVER_ROOT / "jobs")
+MAX_INLINE_IMAGES = 30
+
+
+def _jobs_root() -> Path:
+    configured_root = os.getenv("OPTICAL_CONTEXT_MCP_JOBS_DIR")
+    if configured_root:
+        return Path(configured_root).expanduser().resolve()
+    return (Path(tempfile.gettempdir()) / "optical-context-mcp" / "jobs").resolve()
+
+
+JOB_STORE = JobStore(_jobs_root())
 SERVICE: OpticalCompressionService | None = None
 mcp = FastMCP("Optical Context MCP")
 
@@ -44,7 +56,7 @@ def _manifest_summary(manifest: dict[str, object], inline_images: int) -> str:
         f"Source PDF: {manifest['source_pdf']}",
         f"Extracted images from OCR: {extracted_images}",
         f"Packed image preview returned inline: {min(packed_count, inline_images)}",
-        f"Artifacts directory: {manifest['output_dir']}",
+        f"Artifacts directory (local temp): {manifest['output_dir']}",
     ]
     if packed_count > inline_images:
         summary_lines.append(
@@ -63,13 +75,14 @@ def _manifest_summary(manifest: dict[str, object], inline_images: int) -> str:
 def compress_pdf(
     pdf_path: str,
     chars_per_image: int = 12000,
-    inline_images: int = 3,
+    inline_images: int = MAX_INLINE_IMAGES,
 ) -> ToolResult:
     """Compress a local PDF into dense packed images for downstream agent use."""
     if chars_per_image <= 0:
         raise ValueError("chars_per_image must be greater than 0")
     if inline_images < 0:
         raise ValueError("inline_images cannot be negative")
+    inline_images = min(inline_images, MAX_INLINE_IMAGES)
 
     service = _get_service()
     manifest = service.compress_pdf(pdf_path=pdf_path, chars_per_image=chars_per_image)

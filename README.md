@@ -27,7 +27,7 @@ It reads a local PDF, runs OCR with Mistral, recomposes the extracted text and f
 - reads a local PDF from the MCP host machine
 - extracts page markdown and embedded images with Mistral OCR
 - packs that content into dense PNGs that preserve visual grouping
-- stores a manifest and job artifacts for follow-up retrieval
+- stores a manifest and temp job artifacts for follow-up retrieval
 - lets an agent pull only the packed images it needs
 
 ## Where It Fits
@@ -79,11 +79,13 @@ uvx optical-context-mcp
 ```
 
 - `MISTRAL_API_KEY` is required for `compress_pdf`
+- packed images are always stored locally under the system temp directory
+- `compress_pdf` returns up to `30` packed images inline by default
 
 For pinned shared setups:
 
 ```bash
-uvx --from optical-context-mcp==0.1.3 optical-context-mcp
+uvx --from optical-context-mcp==0.1.4 optical-context-mcp
 ```
 
 ## Run
@@ -139,6 +141,7 @@ For many vision-capable agents, that is a better intermediate format than a plai
 
 - depends on Mistral OCR
 - currently handles local file paths, not remote uploads
+- stores artifacts in the local system temp directory by default
 - optimized for compression and retrieval, not final polished markdown generation
 - quality depends on OCR quality and the visual density of the source document
 

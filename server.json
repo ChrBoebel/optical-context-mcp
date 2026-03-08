@@ -3,7 +3,7 @@
   "name": "io.github.ChrBoebel/optical-context-mcp",
   "title": "Optical Context MCP",
   "description": "Compress OCR-heavy PDFs into dense packed images so agents can work with long visual documents.",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "websiteUrl": "https://github.com/ChrBoebel/optical-context-mcp",
   "repository": {
     "url": "https://github.com/ChrBoebel/optical-context-mcp",
@@ -13,7 +13,7 @@
     {
       "registryType": "pypi",
       "identifier": "optical-context-mcp",
-      "version": "0.1.3",
+      "version": "0.1.4",
       "transport": {
         "type": "stdio"
       }
