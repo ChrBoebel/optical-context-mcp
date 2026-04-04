@@ -96,7 +96,7 @@ uvx --from 'optical-context-mcp[ml]' optical-context-mcp
 For pinned shared setups:
 
 ```bash
-uvx --from optical-context-mcp==0.1.4 optical-context-mcp
+uvx --from optical-context-mcp==0.1.5 optical-context-mcp
 ```
 
 ## Run
