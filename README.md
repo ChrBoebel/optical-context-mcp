@@ -27,6 +27,7 @@ It reads a local PDF, runs OCR with Mistral, recomposes the extracted text and f
 - reads a local PDF from the MCP host machine
 - extracts page markdown and embedded images with Mistral OCR
 - packs that content into dense PNGs that preserve visual grouping
+- optionally sizes embedded figures with a bundled technical-document model
 - stores a manifest and temp job artifacts for follow-up retrieval
 - lets an agent pull only the packed images it needs
 
@@ -72,6 +73,12 @@ This example shows the intended workflow: take a long, visually structured PDF a
 python -m pip install optical-context-mcp
 ```
 
+Install with the adaptive sizing runtime:
+
+```bash
+python -m pip install "optical-context-mcp[ml]"
+```
+
 Run without installing:
 
 ```bash
@@ -81,6 +88,10 @@ uvx optical-context-mcp
 - `MISTRAL_API_KEY` is required for `compress_pdf`
 - packed images are always stored locally under the system temp directory
 - `compress_pdf` returns up to `30` packed images inline by default
+- the adaptive sizing checkpoint is bundled with the package
+- adaptive sizing activates automatically when `torch` and `torchvision` are available
+- set `OPTICAL_CONTEXT_DISABLE_ADAPTIVE_SIZING=1` to force the legacy fixed sizing
+- set `OPTICAL_CONTEXT_ADAPTIVE_MODEL_PATH=/path/to/model.pt` to override the bundled checkpoint
 
 For pinned shared setups:
 
@@ -144,6 +155,7 @@ For many vision-capable agents, that is a better intermediate format than a plai
 - stores artifacts in the local system temp directory by default
 - optimized for compression and retrieval, not final polished markdown generation
 - quality depends on OCR quality and the visual density of the source document
+- adaptive sizing falls back safely to fixed medium image sizing when the ML runtime is absent
 
 ## Roadmap
 

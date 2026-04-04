@@ -81,6 +81,10 @@ class JobStore:
                 )
                 for item in payload["packed_images"]
             ],
+            adaptive_sizing_enabled=bool(payload.get("adaptive_sizing_enabled", False)),
+            adaptive_model_path=payload.get("adaptive_model_path"),
+            adaptive_model_source=payload.get("adaptive_model_source"),
+            adaptive_model_load_error=payload.get("adaptive_model_load_error"),
         )
 
     def get_image_bytes(self, job_id: str, image_index: int) -> bytes:

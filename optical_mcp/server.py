@@ -50,6 +50,8 @@ def _manifest_summary(manifest: dict[str, object], inline_images: int) -> str:
     packed_count = int(manifest["packed_image_count"])
     page_count = int(manifest["page_count"])
     extracted_images = int(manifest["extracted_image_count"])
+    adaptive_sizing_enabled = bool(manifest.get("adaptive_sizing_enabled"))
+    adaptive_model_load_error = manifest.get("adaptive_model_load_error")
     summary_lines = [
         f"Compressed {page_count} PDF pages into {packed_count} packed images.",
         f"Job ID: {manifest['job_id']}",
@@ -57,7 +59,14 @@ def _manifest_summary(manifest: dict[str, object], inline_images: int) -> str:
         f"Extracted images from OCR: {extracted_images}",
         f"Packed image preview returned inline: {min(packed_count, inline_images)}",
         f"Artifacts directory (local temp): {manifest['output_dir']}",
+        (
+            f"Adaptive image sizing: enabled via {manifest.get('adaptive_model_path')}"
+            if adaptive_sizing_enabled
+            else "Adaptive image sizing: fallback medium sizing"
+        ),
     ]
+    if (not adaptive_sizing_enabled) and adaptive_model_load_error:
+        summary_lines.append(f"Adaptive sizing note: {adaptive_model_load_error}")
     if packed_count > inline_images:
         summary_lines.append(
             "Use get_packed_images to fetch the remaining packed PNGs in batches."
