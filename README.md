@@ -70,19 +70,19 @@ This example shows the intended workflow: take a long, visually structured PDF a
 ## Install
 
 ```bash
-python -m pip install optical-context-mcp
+python -m pip install "optical-context-mcp[ml]"
 ```
 
-Install with the adaptive sizing runtime:
+Install without the adaptive sizing runtime:
 
 ```bash
-python -m pip install "optical-context-mcp[ml]"
+python -m pip install optical-context-mcp
 ```
 
 Run without installing:
 
 ```bash
-uvx optical-context-mcp
+uvx --from 'optical-context-mcp[ml]' optical-context-mcp
 ```
 
 - `MISTRAL_API_KEY` is required for `compress_pdf`
@@ -112,7 +112,7 @@ optical-context-mcp
 Register the server in a project:
 
 ```bash
-claude mcp add -s project optical-context -- uvx optical-context-mcp
+claude mcp add -s project optical-context -- uvx --from 'optical-context-mcp[ml]' optical-context-mcp
 ```
 
 Typical use:
