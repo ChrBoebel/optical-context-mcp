@@ -6,6 +6,7 @@ import tempfile
 import pytest
 
 from optical_mcp.models import CompressionJobManifest, PackedImageArtifact
+from optical_mcp.adaptive_image_sizer import AdaptiveImageSizer, bundled_model_path
 from optical_mcp import server
 
 def test_server_exposes_expected_tools():
@@ -69,3 +70,15 @@ def test_compress_pdf_returns_no_more_than_30_inline_images(
 def test_job_store_defaults_to_system_temp_directory():
     expected_root = (Path(tempfile.gettempdir()) / "optical-context-mcp" / "jobs").resolve()
     assert server.JOB_STORE.jobs_root == expected_root
+
+
+def test_bundled_adaptive_model_checkpoint_is_present():
+    path = bundled_model_path()
+    assert path is not None
+    assert path.exists()
+
+
+def test_adaptive_image_sizer_falls_back_without_checkpoint():
+    sizer = AdaptiveImageSizer(model_path="missing-checkpoint.pt")
+    assert not sizer.enabled
+    assert sizer.load_error == "missing_checkpoint"

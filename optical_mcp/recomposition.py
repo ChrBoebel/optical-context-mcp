@@ -5,6 +5,7 @@ Recomposition engine for optical compression.
 from __future__ import annotations
 
 import base64
+from dataclasses import dataclass
 import hashlib
 import io
 from pathlib import Path
@@ -18,6 +19,18 @@ from PIL import Image
 from PIL import ImageDraw
 from PIL import ImageFont
 
+from .adaptive_image_sizer import AdaptiveImageSizer, AdaptiveSizingDecision
+
+
+@dataclass
+class PreparedEmbeddedImage:
+    """Embedded image with a chosen sizing bucket and rendered size."""
+
+    image: Image.Image
+    bucket: str
+    max_height: int
+    source: str = "fallback"
+
 
 class RecompositionEngine:
     """Render extracted content onto compact, readable images."""
@@ -29,12 +42,14 @@ class RecompositionEngine:
         line_spacing: int = 0,
         margin: int = 2,
         columns: int = 2,
+        adaptive_image_sizer: Optional[AdaptiveImageSizer] = None,
     ):
         self.target_width = target_width
         self.font_size = font_size
         self.line_spacing = line_spacing
         self.margin = margin
         self.columns = columns
+        self.adaptive_image_sizer = adaptive_image_sizer
         self.font = self._load_font(font_size)
         self.font_bold = self._load_font(font_size, bold=True)
         self.font_small = self._load_font(font_size - 2)
@@ -59,6 +74,37 @@ class RecompositionEngine:
                     continue
         return ImageFont.load_default()
 
+    def column_width(self) -> int:
+        """Return the effective width of a single packed column."""
+        col_gap = 1
+        return (self.target_width - 2 * self.margin - col_gap) // self.columns
+
+    def collect_page_images(self, page: dict | object) -> List[Image.Image]:
+        """Collect and deduplicate extracted images for one OCR page."""
+        page_seen_hashes: set[str] = set()
+        markdown = page.get("markdown", "") if isinstance(page, dict) else getattr(page, "markdown", "")
+        images = page.get("images", []) if isinstance(page, dict) else getattr(page, "images", [])
+
+        page_images: list[Image.Image] = []
+        for img_data in images:
+            decoded = self._decode_image(img_data)
+            if decoded and self._is_unique_image(decoded, page_seen_hashes):
+                page_images.append(decoded)
+
+        for md_image in self._extract_data_uri_images_from_markdown(markdown):
+            if self._is_unique_image(md_image, page_seen_hashes):
+                page_images.append(md_image)
+
+        return page_images
+
+    def render_bucket_preview(self, img: Image.Image, bucket: str) -> Image.Image:
+        """Render an extracted image exactly as it would appear in packed layout."""
+        max_width = self.column_width() - 10
+        if bucket == "small":
+            max_width = max(32, max_width // 2)
+        decision = AdaptiveSizingDecision(bucket=bucket, source="preview")
+        return self._scale_image(img, max_width, decision.max_height)
+
     def pack_text_and_images_dense(
         self,
         pages_data: List[dict],
@@ -68,9 +114,7 @@ class RecompositionEngine:
         all_content = []
 
         for page_idx, page in enumerate(pages_data):
-            page_seen_hashes: set[str] = set()
             markdown = page.get("markdown", "") if isinstance(page, dict) else getattr(page, "markdown", "")
-            images = page.get("images", []) if isinstance(page, dict) else getattr(page, "images", [])
 
             all_content.append(("header", f"--- Page {page_idx + 1} ---"))
 
@@ -78,16 +122,7 @@ class RecompositionEngine:
             if cleaned_text.strip():
                 all_content.append(("text", cleaned_text))
 
-            page_images = []
-            for img_data in images:
-                decoded = self._decode_image(img_data)
-                if decoded and self._is_unique_image(decoded, page_seen_hashes):
-                    page_images.append(decoded)
-
-            for md_image in self._extract_data_uri_images_from_markdown(markdown):
-                if self._is_unique_image(md_image, page_seen_hashes):
-                    page_images.append(md_image)
-
+            page_images = self.collect_page_images(page)
             if page_images:
                 grouped = self._group_images_for_compact_layout(page_images)
                 for group in grouped:
@@ -172,7 +207,7 @@ class RecompositionEngine:
     ) -> Image.Image:
         del target_height
         col_gap = 1
-        col_width = (self.target_width - 2 * self.margin - col_gap) // self.columns
+        col_width = self.column_width()
         avg_char_width = (
             self.font.getlength("x")
             if hasattr(self.font, "getlength")
@@ -190,10 +225,16 @@ class RecompositionEngine:
                 lines = self._wrap_text(str(item_data), chars_per_line)
                 elements.append(("text", lines, len(lines) * line_height))
             elif item_type == "image":
-                img = self._scale_image(item_data, col_width - 10, 120)
+                if isinstance(item_data, PreparedEmbeddedImage):
+                    img = item_data.image
+                else:
+                    img = self._scale_image(item_data, col_width - 10, 120)
                 elements.append(("image", img, img.height + 6))
             elif item_type == "image_row":
-                row_imgs = item_data
+                row_imgs = [
+                    img.image if isinstance(img, PreparedEmbeddedImage) else img
+                    for img in item_data
+                ]
                 row_height = max(img.height for img in row_imgs) + 6
                 elements.append(("image_row", row_imgs, row_height))
 
@@ -431,29 +472,58 @@ class RecompositionEngine:
     def _group_images_for_compact_layout(
         self,
         images: List[Image.Image],
-    ) -> List[List[Image.Image]]:
+    ) -> List[List[PreparedEmbeddedImage]]:
         col_width = (self.target_width - 3 * self.margin) // self.columns
         max_img_width = col_width - 10
 
-        groups = []
-        current_row = []
+        groups: list[list[PreparedEmbeddedImage]] = []
+        current_row: list[PreparedEmbeddedImage] = []
         current_row_width = 0
 
         for img in images:
-            scaled = self._scale_image(img, max_img_width // 2, 120)
-            if current_row_width + scaled.width + 5 <= max_img_width:
-                current_row.append(scaled)
-                current_row_width += scaled.width + 5
+            prepared = self._prepare_embedded_image(img, max_img_width=max_img_width)
+            if prepared.bucket in {"medium", "large"}:
+                if current_row:
+                    groups.append(current_row)
+                    current_row = []
+                    current_row_width = 0
+                groups.append([prepared])
+                continue
+
+            if current_row_width + prepared.image.width + 5 <= max_img_width:
+                current_row.append(prepared)
+                current_row_width += prepared.image.width + 5
             else:
                 if current_row:
                     groups.append(current_row)
-                current_row = [scaled]
-                current_row_width = scaled.width
+                current_row = [prepared]
+                current_row_width = prepared.image.width
 
         if current_row:
             groups.append(current_row)
 
         return groups
+
+    def _prepare_embedded_image(
+        self,
+        img: Image.Image,
+        *,
+        max_img_width: int,
+    ) -> PreparedEmbeddedImage:
+        decision = self._predict_image_size(img)
+        width_cap = max_img_width if decision.bucket in {"medium", "large"} else max(32, max_img_width // 2)
+        scaled = self._scale_image(img, width_cap, decision.max_height)
+        return PreparedEmbeddedImage(
+            image=scaled,
+            bucket=decision.bucket,
+            max_height=decision.max_height,
+            source=decision.source,
+        )
+
+    def _predict_image_size(self, img: Image.Image) -> AdaptiveSizingDecision:
+        if self.adaptive_image_sizer is None:
+            return AdaptiveSizingDecision(bucket="medium", source="fallback")
+        return self.adaptive_image_sizer.predict(img)
 
     def _is_full_page_image(self, img: Image.Image) -> bool:
         width, height = img.size

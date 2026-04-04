@@ -7,7 +7,10 @@ from __future__ import annotations
 import base64
 from pathlib import Path
 
-from mistralai import Mistral
+try:
+    from mistralai import Mistral
+except ImportError:  # mistralai>=2.x exposes the SDK from mistralai.client
+    from mistralai.client import Mistral
 
 
 class MistralOCRClient:

@@ -29,6 +29,10 @@ def test_manifest_round_trip(tmp_path: Path):
                 size_bytes=12345,
             )
         ],
+        adaptive_sizing_enabled=True,
+        adaptive_model_path="/tmp/adaptive_image_sizer.pt",
+        adaptive_model_source="bundled_model",
+        adaptive_model_load_error=None,
     )
 
     store.save_manifest(job_dir, manifest)

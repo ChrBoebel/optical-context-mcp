@@ -32,12 +32,22 @@ dependencies = [
 dev = [
   "pytest>=8.0.0",
 ]
+ml = [
+  "torch>=2.3.0",
+  "torchvision>=0.18.0",
+]
 
 [project.scripts]
 optical-context-mcp = "optical_mcp.server:main"
 
+[tool.setuptools]
+include-package-data = true
+
 [tool.setuptools.packages.find]
 include = ["optical_mcp*"]
+
+[tool.setuptools.package-data]
+optical_mcp = ["model_data/*.pt"]
 
 [project.urls]
 Homepage = "https://pypi.org/project/optical-context-mcp/"

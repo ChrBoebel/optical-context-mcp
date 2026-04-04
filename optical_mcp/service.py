@@ -6,6 +6,7 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
+from .adaptive_image_sizer import AdaptiveImageSizer
 from .mistral_client import MistralOCRClient
 from .models import CompressionJobManifest
 from .recomposition import RecompositionEngine
@@ -21,12 +22,20 @@ class OpticalCompressionService:
         self,
         job_store: JobStore,
         mistral_api_key: str | None = None,
+        adaptive_model_path: str | Path | None = None,
     ):
         load_dotenv(PROJECT_ROOT / ".env")
         self.job_store = job_store
         self.mistral_api_key = mistral_api_key or os.getenv("MISTRAL_API_KEY")
+        disable_adaptive_sizing = os.getenv("OPTICAL_CONTEXT_DISABLE_ADAPTIVE_SIZING", "").strip().lower()
+        self._adaptive_sizing_disabled = disable_adaptive_sizing in {"1", "true", "yes", "on"}
+        configured_model_path = adaptive_model_path or os.getenv("OPTICAL_CONTEXT_ADAPTIVE_MODEL_PATH")
+        self._adaptive_model_source = "configured_model" if configured_model_path else "bundled_model"
+        self.adaptive_image_sizer = (
+            None if self._adaptive_sizing_disabled else AdaptiveImageSizer(model_path=configured_model_path)
+        )
         self._ocr_client: MistralOCRClient | None = None
-        self.recomposition_engine = RecompositionEngine()
+        self.recomposition_engine = RecompositionEngine(adaptive_image_sizer=self.adaptive_image_sizer)
 
     @property
     def ocr_client(self) -> MistralOCRClient:
@@ -85,6 +94,22 @@ class OpticalCompressionService:
             packed_image_count=len(packed_artifacts),
             ocr_markdown_path=str(ocr_markdown_path.resolve()),
             packed_images=packed_artifacts,
+            adaptive_sizing_enabled=bool(self.adaptive_image_sizer and self.adaptive_image_sizer.enabled),
+            adaptive_model_path=(
+                str(self.adaptive_image_sizer.model_path.resolve())
+                if self.adaptive_image_sizer and self.adaptive_image_sizer.model_path
+                else None
+            ),
+            adaptive_model_source=(
+                self._adaptive_model_source
+                if self.adaptive_image_sizer and self.adaptive_image_sizer.enabled
+                else None
+            ),
+            adaptive_model_load_error=(
+                "disabled_by_env"
+                if self._adaptive_sizing_disabled
+                else (self.adaptive_image_sizer.load_error if self.adaptive_image_sizer else None)
+            ),
         )
         self.job_store.save_manifest(job_dir, manifest)
         return manifest
