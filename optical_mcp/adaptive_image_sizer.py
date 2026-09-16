@@ -168,14 +168,14 @@ class AdaptiveImageSizer:
             return
 
         try:
-            checkpoint = torch.load(self.model_path, map_location="cpu")
+            checkpoint = torch.load(self.model_path, map_location="cpu", weights_only=True)
             if torch.backends.mps.is_available():
                 self._device = "mps"
             model = models.mobilenet_v3_small(weights=None)
             out_features = len(checkpoint.get("class_names", list(BUCKET_ORDER)))
             model.classifier[3] = torch.nn.Linear(model.classifier[3].in_features, out_features)
             model.load_state_dict(checkpoint["state_dict"])
-            model.eval()
+            model.train(False)
             model.to(self._device)
             self._model = model
             self._class_names = list(checkpoint.get("class_names", list(BUCKET_ORDER)))
