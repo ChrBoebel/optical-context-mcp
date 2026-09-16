@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "optical-context-mcp"
-version = "0.1.4"
+version = "0.1.5"
 description = "MCP server that compresses OCR-heavy PDFs into dense packed images for AI agent workflows."
 readme = "README.md"
 requires-python = ">=3.11"
@@ -22,7 +22,7 @@ classifiers = [
   "Topic :: Scientific/Engineering :: Artificial Intelligence",
 ]
 dependencies = [
-  "fastmcp>=3.1.0",
+  "fastmcp>=3.2.0",
   "mistralai>=1.12.0",
   "Pillow>=12.0.0",
   "python-dotenv>=1.2.0",
