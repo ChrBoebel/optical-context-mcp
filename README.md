@@ -161,6 +161,15 @@ For many vision-capable agents, that is a better intermediate format than a plai
 
 - make the OCR layer provider-agnostic so different OCR backends can be swapped behind the same MCP workflow
 
+## Feedback
+
+Tried Optical Context in a document workflow? You can voluntarily share what
+worked and what got in the way using the [feedback form](https://github.com/ChrBoebel/optical-context-mcp/issues/new?template=feedback.yml).
+Include your package version, MCP client and a brief description of the document
+type. Do not attach private PDFs or API keys. Feedback is public on GitHub.
+
+See the [changelog](CHANGELOG.md) for changes between published versions.
+
 ## Development
 
 ```bash
@@ -168,3 +177,15 @@ uv venv --python /opt/homebrew/bin/python3.11 .venv
 uv pip install --python .venv/bin/python -e ".[dev]"
 .venv/bin/python -m pytest
 ```
+
+## Publishing
+
+Keep `pyproject.toml` and both versions in `server.json` synchronized. Run the
+**Publish PyPI** workflow on the reviewed release commit. It checks the wheel,
+runs tests against the installed distribution, publishes to PyPI, then publishes
+the same version to the MCP Registry. Both use GitHub OIDC; no local publishing
+token is required. If only the registry job fails, rerun that failed job rather
+than republishing the immutable PyPI version.
+
+Create the matching GitHub release from that same commit and attach the workflow's
+`python-distributions` artifact.
