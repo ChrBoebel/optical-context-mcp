@@ -1,5 +1,5 @@
 {
-  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-10-17/server.schema.json",
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.ChrBoebel/optical-context-mcp",
   "title": "Optical Context MCP",
   "description": "Compress OCR-heavy PDFs into dense packed images so agents can work with long visual documents.",
