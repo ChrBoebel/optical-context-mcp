@@ -2,6 +2,11 @@ name: Publish PyPI
 
 on:
   workflow_dispatch:
+    inputs:
+      registry_only:
+        description: Publish only the already released PyPI version to the MCP Registry
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -12,6 +17,7 @@ concurrency:
 
 jobs:
   publish:
+    if: ${{ !inputs.registry_only }}
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -52,6 +58,7 @@ jobs:
 
   registry:
     needs: publish
+    if: ${{ always() && !cancelled() && (needs.publish.result == 'success' || inputs.registry_only) }}
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -65,10 +72,10 @@ jobs:
           PUBLISHER_VERSION: v1.8.1
         run: |
           base="https://github.com/modelcontextprotocol/registry/releases/download/$PUBLISHER_VERSION"
-          curl --fail --location --retry 3 "$base/mcp-publisher_linux_amd64.tar.gz" -o publisher.tar.gz
+          curl --fail --location --retry 3 "$base/mcp-publisher_linux_amd64.tar.gz" -o mcp-publisher_linux_amd64.tar.gz
           curl --fail --location --retry 3 "$base/registry_${PUBLISHER_VERSION#v}_checksums.txt" -o checksums.txt
           grep ' mcp-publisher_linux_amd64.tar.gz$' checksums.txt | sha256sum --check --strict
-          tar -xzf publisher.tar.gz mcp-publisher
+          tar -xzf mcp-publisher_linux_amd64.tar.gz mcp-publisher
 
       - name: Validate registry metadata
         run: ./mcp-publisher validate server.json

@@ -186,6 +186,8 @@ runs tests against the installed distribution, publishes to PyPI, then publishes
 the same version to the MCP Registry. Both use GitHub OIDC; no local publishing
 token is required. If only the registry job fails, rerun that failed job rather
 than republishing the immutable PyPI version.
+When a workflow correction requires a new run, select `registry_only` to retry
+registry publication without uploading the existing PyPI version again.
 
 Create the matching GitHub release from that same commit and attach the workflow's
 `python-distributions` artifact.
