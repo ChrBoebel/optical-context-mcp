@@ -5,11 +5,17 @@ on:
 
 permissions:
   contents: read
-  id-token: write
+
+concurrency:
+  group: optical-context-release
+  cancel-in-progress: false
 
 jobs:
   publish:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
     environment:
       name: pypi
       url: https://pypi.org/project/optical-context-mcp/
@@ -24,8 +30,51 @@ jobs:
 
       - name: Build distributions
         run: |
-          python -m pip install --upgrade build
+          python -m pip install --upgrade build twine pytest
           python -m build
+          python -m twine check dist/*
+          python scripts/check-release.py
+
+      - name: Test the built wheel
+        run: |
+          python -m pip install dist/*.whl
+          cd "$RUNNER_TEMP"
+          python -m pytest "$GITHUB_WORKSPACE/tests"
+
+      - name: Preserve release distributions
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-distributions
+          path: dist/*
 
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
+
+  registry:
+    needs: publish
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Check out the same release commit
+        uses: actions/checkout@v4
+
+      - name: Install verified MCP publisher
+        env:
+          PUBLISHER_VERSION: v1.8.1
+        run: |
+          base="https://github.com/modelcontextprotocol/registry/releases/download/$PUBLISHER_VERSION"
+          curl --fail --location --retry 3 "$base/mcp-publisher_linux_amd64.tar.gz" -o publisher.tar.gz
+          curl --fail --location --retry 3 "$base/registry_${PUBLISHER_VERSION#v}_checksums.txt" -o checksums.txt
+          grep ' mcp-publisher_linux_amd64.tar.gz$' checksums.txt | sha256sum --check --strict
+          tar -xzf publisher.tar.gz mcp-publisher
+
+      - name: Validate registry metadata
+        run: ./mcp-publisher validate server.json
+
+      - name: Authenticate to MCP Registry
+        run: ./mcp-publisher login github-oidc
+
+      - name: Publish matching MCP Registry version
+        run: ./mcp-publisher publish server.json

@@ -1,0 +1,26 @@
+name: Share feedback
+description: Tell us how you tried the project and what worked for you
+title: "feedback: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Feedback is voluntary and public on GitHub. A short note is enough.
+        Do not include API keys, tokens, private documents, transcripts or personal data.
+  - type: input
+    id: version
+    attributes:
+      label: Version and environment
+      description: Package or plugin version, operating system and client, if known.
+  - type: textarea
+    id: workflow
+    attributes:
+      label: What did you try?
+      description: Describe the task or workflow in a few words.
+    validations:
+      required: true
+  - type: textarea
+    id: outcome
+    attributes:
+      label: What worked, and what got in the way?
+      description: Successful setups, missing features and failed attempts are all useful.
